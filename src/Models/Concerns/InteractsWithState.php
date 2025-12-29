@@ -87,7 +87,7 @@ trait InteractsWithState
     public function markAsRejected(): self
     {
         return $this->forceFill(['status' => Enums\ApprovalStatus::REJECTED])
-            ->markApprovedAtAs(null);
+            ->markApprovedAtAs($this->freshTimestamp());
     }
 
     protected function markApprovedAtAs(?\DateTimeInterface $approvedAt): self
