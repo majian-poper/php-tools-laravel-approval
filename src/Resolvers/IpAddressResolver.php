@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Resolvers;
+namespace PHPTools\Approval\Resolvers;
 
-use EnaTools\Approval\Contracts\ColumnResolver;
+use PHPTools\Approval\Contracts\ColumnResolver;
 use Illuminate\Support\Facades\Request;
 
 class IpAddressResolver implements ColumnResolver

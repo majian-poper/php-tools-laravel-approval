@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval;
+namespace PHPTools\Approval;
 
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\Auth\Authenticatable;

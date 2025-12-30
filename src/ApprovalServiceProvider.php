@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval;
+namespace PHPTools\Approval;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

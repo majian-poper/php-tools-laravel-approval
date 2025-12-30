@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Exceptions;
+namespace PHPTools\Approval\Exceptions;
 
-use EnaTools\Approval\Models\ApprovalTask;
+use PHPTools\Approval\Models\ApprovalTask;
 
 class ApprovalTaskExpiredException extends \Exception
 {

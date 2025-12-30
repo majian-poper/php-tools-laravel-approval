@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Exceptions;
+namespace PHPTools\Approval\Exceptions;
 
-use EnaTools\Approval\Models\ApprovalStep;
+use PHPTools\Approval\Models\ApprovalStep;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class ApproverNotMatchException extends \Exception

@@ -1,7 +1,7 @@
 <?php
 
-use EnaTools\Approval\Contracts;
-use EnaTools\Approval\Enums;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -74,6 +74,7 @@ return new class extends Migration
                 $table->jsonb('old_values');
                 $table->jsonb('new_values');
                 $table->timestamp('effected_at')->nullable();
+                $table->timestamp('rolled_back_at')->nullable();
                 $table->timestamps();
 
                 $table->index(['approvable_type', 'approvable_id'], 'approvals_approvable_index');

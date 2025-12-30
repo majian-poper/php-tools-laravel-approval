@@ -1,5 +1,5 @@
 {
-    "name": "ena-tools/laravel-approval",
+    "name": "php-tools/laravel-approval",
     "description": "laravel approval",
     "keywords": [
         "laravel",
@@ -25,13 +25,13 @@
     },
     "autoload": {
         "psr-4": {
-            "EnaTools\\Approval\\": "src/",
-            "EnaTools\\Approval\\Database\\Factories\\": "database/factories/"
+            "PHPTools\\Approval\\": "src/",
+            "PHPTools\\Approval\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "EnaTools\\Approval\\Tests\\": "tests/",
+            "PHPTools\\Approval\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -53,10 +53,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "EnaTools\\Approval\\ApprovalServiceProvider"
+                "PHPTools\\Approval\\ApprovalServiceProvider"
             ],
             "aliases": {
-                "Approval": "EnaTools\\Approval\\Facades\\Approval"
+                "Approval": "PHPTools\\Approval\\Facades\\Approval"
             }
         }
     },

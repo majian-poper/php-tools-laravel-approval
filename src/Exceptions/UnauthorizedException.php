@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval\Exceptions;
+namespace PHPTools\Approval\Exceptions;
 
 class UnauthorizedException extends \RuntimeException
 {

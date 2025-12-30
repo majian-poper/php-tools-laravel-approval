@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Events;
+namespace PHPTools\Approval\Events;
 
-use EnaTools\Approval\Models\ApprovalTask;
+use PHPTools\Approval\Models\ApprovalTask;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Bus\Dispatchable;

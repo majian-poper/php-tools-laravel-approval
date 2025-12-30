@@ -1,9 +1,9 @@
 <?php
 
-namespace EnaTools\Approval\Resolvers;
+namespace PHPTools\Approval\Resolvers;
 
-use EnaTools\Approval\Contracts\UserResolver as Resolver;
-use EnaTools\Approval\Exceptions\UnauthorizedException;
+use PHPTools\Approval\Contracts\UserResolver as Resolver;
+use PHPTools\Approval\Exceptions\UnauthorizedException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 

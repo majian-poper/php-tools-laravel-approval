@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Models\Concerns;
+namespace PHPTools\Approval\Models\Concerns;
 
-use EnaTools\Approval\Enums;
+use PHPTools\Approval\Enums;
 use Illuminate\Database\Eloquent\Builder;
 
 /**

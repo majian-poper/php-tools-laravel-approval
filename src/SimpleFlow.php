@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval;
+namespace PHPTools\Approval;
 
 class SimpleFlow implements Contracts\Flow
 {
@@ -32,7 +32,7 @@ class SimpleFlow implements Contracts\Flow
     }
 
     /**
-     * @return array<\EnaTools\Approval\Contracts\Approver>
+     * @return array<\PHPTools\Approval\Contracts\Approver>
      */
     public function getApprovers(): iterable
     {

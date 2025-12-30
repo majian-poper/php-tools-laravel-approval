@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval\Models;
+namespace PHPTools\Approval\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string $approver_type
  *
  * @property-read ApprovalFlow $flow
- * @property-read \EnaTools\Approval\Contracts\Approver & Model $approver
+ * @property-read \PHPTools\Approval\Contracts\Approver & Model $approver
  */
 class ApprovalFlowStep extends Model
 {

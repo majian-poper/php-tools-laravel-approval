@@ -1,9 +1,9 @@
 <?php
 
-namespace EnaTools\Approval\Exceptions;
+namespace PHPTools\Approval\Exceptions;
 
-use EnaTools\Approval\Contracts\HasState;
-use EnaTools\Approval\Enums\ApprovalStatus;
+use PHPTools\Approval\Contracts\HasState;
+use PHPTools\Approval\Enums\ApprovalStatus;
 
 class UnexpectedApprovalStatusException extends \Exception
 {

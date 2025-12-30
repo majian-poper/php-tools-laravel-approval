@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Contracts;
+namespace PHPTools\Approval\Contracts;
 
-use EnaTools\Approval\Enums\ApprovalFlowType;
+use PHPTools\Approval\Enums\ApprovalFlowType;
 
 interface Flow
 {

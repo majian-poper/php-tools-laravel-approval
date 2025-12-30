@@ -1,9 +1,9 @@
 <?php
 
-namespace EnaTools\Approval\Models;
+namespace PHPTools\Approval\Models;
 
-use EnaTools\Approval\Contracts;
-use EnaTools\Approval\Enums;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

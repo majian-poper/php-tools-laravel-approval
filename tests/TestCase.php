@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Tests;
+namespace PHPTools\Approval\Tests;
 
-use EnaTools\Approval\ApprovalServiceProvider;
+use PHPTools\Approval\ApprovalServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -13,7 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName) => 'EnaTools\\Approval\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn(string $modelName) => 'PHPTools\\Approval\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 

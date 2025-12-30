@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval\Events;
+namespace PHPTools\Approval\Events;
 
-use EnaTools\Approval\Models\ApprovalStep;
+use PHPTools\Approval\Models\ApprovalStep;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;

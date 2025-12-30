@@ -1,9 +1,9 @@
 <?php
 
-namespace EnaTools\Approval\Contracts;
+namespace PHPTools\Approval\Contracts;
 
-use EnaTools\Approval\Enums\ApprovableEvent;
-use EnaTools\Approval\Models\Approval;
+use PHPTools\Approval\Enums\ApprovableEvent;
+use PHPTools\Approval\Models\Approval;
 
 interface Approvable
 {

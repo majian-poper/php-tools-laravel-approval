@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval\Contracts;
+namespace PHPTools\Approval\Contracts;
 
 interface ApproverResolver
 {

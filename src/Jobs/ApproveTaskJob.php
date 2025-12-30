@@ -1,12 +1,12 @@
 <?php
 
-namespace EnaTools\Approval\Jobs;
+namespace PHPTools\Approval\Jobs;
 
-use EnaTools\Approval\Enums\ApprovableEvent;
-use EnaTools\Approval\Events;
-use EnaTools\Approval\Facades\ApprovalFacade;
-use EnaTools\Approval\Models\Approval;
-use EnaTools\Approval\Models\ApprovalTask;
+use PHPTools\Approval\Enums\ApprovableEvent;
+use PHPTools\Approval\Events;
+use PHPTools\Approval\Facades\ApprovalFacade;
+use PHPTools\Approval\Models\Approval;
+use PHPTools\Approval\Models\ApprovalTask;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

@@ -1,8 +1,8 @@
 <?php
 
-namespace EnaTools\Approval;
+namespace PHPTools\Approval;
 
-use EnaTools\Approval\Facades\ApprovalFacade;
+use PHPTools\Approval\Facades\ApprovalFacade;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

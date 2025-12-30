@@ -1,10 +1,10 @@
 <?php
 
-namespace EnaTools\Approval\Facades;
+namespace PHPTools\Approval\Facades;
 
-use EnaTools\Approval\ApprovalManager;
-use EnaTools\Approval\Contracts;
-use EnaTools\Approval\Models;
+use PHPTools\Approval\ApprovalManager;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;

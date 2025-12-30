@@ -1,5 +1,5 @@
 <?php
 
-use EnaTools\Approval\Tests\TestCase;
+use PHPTools\Approval\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

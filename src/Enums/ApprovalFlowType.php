@@ -1,6 +1,6 @@
 <?php
 
-namespace EnaTools\Approval\Enums;
+namespace PHPTools\Approval\Enums;
 
 enum ApprovalFlowType: string
 {
