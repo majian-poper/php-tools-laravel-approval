@@ -102,10 +102,10 @@ class ApprovalManager
      * @param Contracts\Flow $flow
      * @param Authenticatable $user
      *
+     * @return Models\ApprovalTask
+     *
      * @throws Exceptions\NoApproverForCreationException
      * @throws Exceptions\NoApprovableForCreationException
-     *
-     * @return Models\ApprovalTask
      */
     public function createTask(iterable $approvables, Contracts\Flow $flow, Authenticatable $user): Models\ApprovalTask
     {
@@ -272,7 +272,7 @@ class ApprovalManager
         }
 
         if ($orderNumber === 0) {
-            throw new Exceptions\NoApproverForCreationException();
+            throw new Exceptions\NoApproverForCreationException;
         }
 
         $builder->fillAndInsert($stepValues);
@@ -318,7 +318,7 @@ class ApprovalManager
         }
 
         if ($orderNumber === 0) {
-            throw new Exceptions\NoApprovableForCreationException();
+            throw new Exceptions\NoApprovableForCreationException;
         }
 
         return $task;

@@ -2,11 +2,6 @@
 
 namespace PHPTools\Approval\Jobs;
 
-use PHPTools\Approval\Enums\ApprovableEvent;
-use PHPTools\Approval\Events;
-use PHPTools\Approval\Facades\ApprovalFacade;
-use PHPTools\Approval\Models\Approval;
-use PHPTools\Approval\Models\ApprovalTask;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,6 +10,11 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use PHPTools\Approval\Enums\ApprovableEvent;
+use PHPTools\Approval\Events;
+use PHPTools\Approval\Facades\ApprovalFacade;
+use PHPTools\Approval\Models\Approval;
+use PHPTools\Approval\Models\ApprovalTask;
 
 class RollBackTaskJob implements ShouldQueue
 {

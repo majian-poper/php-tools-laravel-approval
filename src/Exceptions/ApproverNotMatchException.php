@@ -2,8 +2,8 @@
 
 namespace PHPTools\Approval\Exceptions;
 
-use PHPTools\Approval\Models\ApprovalStep;
 use Illuminate\Contracts\Auth\Authenticatable;
+use PHPTools\Approval\Models\ApprovalStep;
 
 class ApproverNotMatchException extends \Exception
 {

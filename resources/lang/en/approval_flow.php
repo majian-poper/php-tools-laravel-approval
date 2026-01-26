@@ -2,6 +2,6 @@
 
 return [
 
-    'title' =>  'Request for :event :label data',
+    'title' => 'Request for :event :label data',
 
 ];

@@ -2,9 +2,9 @@
 
 namespace PHPTools\Approval\Models\Concerns;
 
+use Illuminate\Database\Eloquent\Builder;
 use PHPTools\Approval\Enums;
 use PHPTools\Approval\Exceptions;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property Enums\ApprovalStatus $status

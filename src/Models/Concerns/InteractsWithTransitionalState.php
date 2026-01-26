@@ -2,8 +2,8 @@
 
 namespace PHPTools\Approval\Models\Concerns;
 
-use PHPTools\Approval\Enums;
 use Illuminate\Database\Eloquent\Builder;
+use PHPTools\Approval\Enums;
 
 /**
  * @property \DateTimeInterface | null $rolled_back_at

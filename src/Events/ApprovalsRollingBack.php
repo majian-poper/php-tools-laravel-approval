@@ -2,11 +2,11 @@
 
 namespace PHPTools\Approval\Events;
 
-use PHPTools\Approval\Enums\ApprovableEvent;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use PHPTools\Approval\Enums\ApprovableEvent;
 
 class ApprovalsRollingBack
 {

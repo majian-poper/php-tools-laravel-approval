@@ -2,9 +2,9 @@
 
 namespace PHPTools\Approval\Tests;
 
-use PHPTools\Approval\ApprovalServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
+use PHPTools\Approval\ApprovalServiceProvider;
 
 class TestCase extends Orchestra
 {

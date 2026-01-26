@@ -2,10 +2,10 @@
 
 namespace PHPTools\Approval\Models;
 
-use PHPTools\Approval\Contracts;
-use PHPTools\Approval\Enums;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
 
 /**
  * @property string $name

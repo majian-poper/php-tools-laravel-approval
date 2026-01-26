@@ -2,10 +2,10 @@
 
 namespace PHPTools\Approval\Events;
 
-use PHPTools\Approval\Models\ApprovalStep;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use PHPTools\Approval\Models\ApprovalStep;
 
 class ApprovalStepRejected
 {

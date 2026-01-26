@@ -2,9 +2,9 @@
 
 namespace PHPTools\Approval\Resolvers;
 
-use PHPTools\Approval\Contracts\ColumnResolver;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
+use PHPTools\Approval\Contracts\ColumnResolver;
 
 class UrlResolver implements ColumnResolver
 {

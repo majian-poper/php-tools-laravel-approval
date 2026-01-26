@@ -2,12 +2,12 @@
 
 namespace PHPTools\Approval\Facades;
 
-use PHPTools\Approval\ApprovalManager;
-use PHPTools\Approval\Contracts;
-use PHPTools\Approval\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
+use PHPTools\Approval\ApprovalManager;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Models;
 
 /**
  * @method static void enable(bool $enabled = true)

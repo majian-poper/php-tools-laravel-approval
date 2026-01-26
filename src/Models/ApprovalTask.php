@@ -2,18 +2,18 @@
 
 namespace PHPTools\Approval\Models;
 
-use PHPTools\Approval\Contracts;
-use PHPTools\Approval\Enums;
-use PHPTools\Approval\Events;
-use PHPTools\Approval\Exceptions;
-use PHPTools\Approval\Facades\ApprovalFacade;
-use PHPTools\Approval\Jobs;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Collection;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
+use PHPTools\Approval\Events;
+use PHPTools\Approval\Exceptions;
+use PHPTools\Approval\Facades\ApprovalFacade;
+use PHPTools\Approval\Jobs;
 
 /**
  * @property string $title
@@ -70,8 +70,9 @@ class ApprovalTask extends Model implements Contracts\HasState
             $attributeCasts = collect(config('approval.column_resolvers', []))
                 ->filter(static fn(string $resolver): bool => \is_subclass_of($resolver, Contracts\ColumnResolver::class))
                 ->mapWithKeys(
-                    static fn(string $resolver): array
-                    => [\call_user_func([$resolver, 'name']) => \call_user_func([$resolver, 'attributeCast'])]
+                    static fn(string $resolver): array => [
+                        \call_user_func([$resolver, 'name']) => \call_user_func([$resolver, 'attributeCast'])
+                    ]
                 );
 
             $casts = [

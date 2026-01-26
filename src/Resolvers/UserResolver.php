@@ -2,10 +2,10 @@
 
 namespace PHPTools\Approval\Resolvers;
 
-use PHPTools\Approval\Contracts\UserResolver as Resolver;
-use PHPTools\Approval\Exceptions\UnauthorizedException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use PHPTools\Approval\Contracts\UserResolver as Resolver;
+use PHPTools\Approval\Exceptions\UnauthorizedException;
 
 class UserResolver implements Resolver
 {

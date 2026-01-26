@@ -1,0 +1,21 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "concat_space": {
+            "spacing": "one"
+        },
+        "elseif": false,
+        "function_declaration": {
+            "closure_fn_spacing": "none"
+        },
+        "no_superfluous_phpdoc_tags": false,
+        "no_multiline_whitespace_around_double_arrow": false,
+        "phpdoc_separation": false,
+        "phpdoc_align": false,
+        "self_static_accessor": false,
+        "trailing_comma_in_multiline": false,
+        "types_spaces": {
+            "space": "single"
+        }
+    }
+}

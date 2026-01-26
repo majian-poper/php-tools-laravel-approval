@@ -2,15 +2,15 @@
 
 namespace PHPTools\Approval\Models;
 
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use PHPTools\Approval\Contracts;
 use PHPTools\Approval\Enums;
 use PHPTools\Approval\Events;
 use PHPTools\Approval\Exceptions;
 use PHPTools\Approval\Facades\ApprovalFacade;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property int $approval_task_id

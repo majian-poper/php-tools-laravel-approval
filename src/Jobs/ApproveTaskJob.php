@@ -2,11 +2,6 @@
 
 namespace PHPTools\Approval\Jobs;
 
-use PHPTools\Approval\Enums\ApprovableEvent;
-use PHPTools\Approval\Events;
-use PHPTools\Approval\Facades\ApprovalFacade;
-use PHPTools\Approval\Models\Approval;
-use PHPTools\Approval\Models\ApprovalTask;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +13,11 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use PHPTools\Approval\Enums\ApprovableEvent;
+use PHPTools\Approval\Events;
+use PHPTools\Approval\Facades\ApprovalFacade;
+use PHPTools\Approval\Models\Approval;
+use PHPTools\Approval\Models\ApprovalTask;
 
 class ApproveTaskJob implements ShouldQueue
 {

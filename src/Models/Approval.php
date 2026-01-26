@@ -2,12 +2,12 @@
 
 namespace PHPTools\Approval\Models;
 
-use PHPTools\Approval\Contracts;
-use PHPTools\Approval\Enums;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
 
 /**
  * @property int $approval_task_id
@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property \Carbon\CarbonImmutable | null $effected_at
  * @property \Carbon\CarbonImmutable | null $rolled_back_at
  *
+ * @property-read string $approvable_title
  * @property-read ApprovalTask $task
  * @property-read Contracts\Approvable $approvable
  *
@@ -59,6 +60,15 @@ class Approval extends Model
         'effected_at' => 'immutable_datetime',
         'rolled_back_at' => 'immutable_datetime',
     ];
+
+    public function getApprovableTitleAttribute(): string
+    {
+        return \sprintf(
+            '%s #%s',
+            (new (Model::getActualClassNameForMorph($this->approvable_type)))->getLabel(),
+            $this->approvable_id ?: 'new'
+        );
+    }
 
     public function task(): BelongsTo
     {

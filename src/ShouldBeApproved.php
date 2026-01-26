@@ -2,10 +2,10 @@
 
 namespace PHPTools\Approval;
 
-use PHPTools\Approval\Facades\ApprovalFacade;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PHPTools\Approval\Facades\ApprovalFacade;
 
 /**
  * @see \Illuminate\Database\Eloquent\Model
@@ -103,8 +103,8 @@ trait ShouldBeApproved
 
         return [
             'event' => $event,
-            'old_values' => $oldValues ?: (object)[],
-            'new_values' => $newValues ?: (object)[],
+            'old_values' => $oldValues ?: (object) [],
+            'new_values' => $newValues ?: (object) [],
         ];
     }
 
