@@ -40,6 +40,7 @@ return new class extends Migration
             function (Blueprint $table) {
                 $table->id();
                 $table->string('title')->default('');
+                $table->text('description');
                 $table->morphs('user', 'approval_tasks_user_index');
                 $table->string('flow_type')->default(Enums\ApprovalFlowType::EVERY->value);
                 $table->string('status')->default(Enums\ApprovalStatus::PENDING->value);

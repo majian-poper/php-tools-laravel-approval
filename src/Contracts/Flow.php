@@ -6,9 +6,13 @@ use PHPTools\Approval\Enums\ApprovalFlowType;
 
 interface Flow
 {
-    public function setTitle(string $title): void;
+    public function setTitle(string $title): static;
 
     public function getTitle(): string;
+
+    public function setDescription(string $description): static;
+
+    public function getDescription(): string;
 
     public function getType(): ApprovalFlowType;
 

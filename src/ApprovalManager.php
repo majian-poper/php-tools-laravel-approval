@@ -2,12 +2,12 @@
 
 namespace PHPTools\Approval;
 
-use Carbon\CarbonInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Schema;
 
 class ApprovalManager
 {
@@ -113,6 +113,7 @@ class ApprovalManager
 
         $task = $taskModelClass::query()->getConnection()->transaction(
             function () use ($taskModelClass, $user, $flow, $approvables): Models\ApprovalTask {
+                /** @var Models\ApprovalTask $task */
                 $task = new $taskModelClass(
                     [
                         'title' => $flow->getTitle(),
@@ -122,6 +123,10 @@ class ApprovalManager
                         ...$this->resolveCustomColumns(),
                     ]
                 );
+
+                if (Schema::connection($task->getConnectionName())->hasColumn($task->getTable(), 'description')) {
+                    $task->setAttribute('description', $flow->getDescription());
+                }
 
                 $task->user()->associate($user)->save();
 
@@ -181,10 +186,11 @@ class ApprovalManager
         );
     }
 
-    public function makeSimpleFlow(string $title): Contracts\Flow
+    public function makeSimpleFlow(string $title, string $description = ''): Contracts\Flow
     {
         return new SimpleFlow(
             $title,
+            $description,
             $this->resolveDefaultFlowType(),
             $this->resolveDefaultExpiresAt(),
             $this->resolveDefaultApprovers()
@@ -218,7 +224,7 @@ class ApprovalManager
         return $flowType;
     }
 
-    protected function resolveDefaultExpiresAt(): CarbonInterface
+    protected function resolveDefaultExpiresAt(): \DateTimeInterface
     {
         $expiration = $this->config->get('approval.default_expiration');
 

@@ -17,6 +17,7 @@ use PHPTools\Approval\Jobs;
 
 /**
  * @property string $title
+ * @property string $description
  * @property string $user_type
  * @property int $user_id
  * @property Enums\ApprovalFlowType $flow_type
@@ -48,6 +49,7 @@ class ApprovalTask extends Model implements Contracts\HasState
 
             $fillables = [
                 'title',
+                'description',
                 'user_type',
                 'user_id',
                 'flow_type',
@@ -77,6 +79,7 @@ class ApprovalTask extends Model implements Contracts\HasState
 
             $casts = [
                 'title' => 'string',
+                'description' => 'string',
                 'user_type' => 'string',
                 'user_id' => 'int',
                 'flow_type' => Enums\ApprovalFlowType::class,

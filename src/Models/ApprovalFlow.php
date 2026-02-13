@@ -31,6 +31,10 @@ class ApprovalFlow extends Model implements Contracts\Flow
         'expiration' => 'int',
     ];
 
+    protected string $title = '';
+
+    protected string $description = '';
+
     protected static function booted()
     {
         static::deleting(static fn(self $model) => $model->steps()->delete());
@@ -43,14 +47,28 @@ class ApprovalFlow extends Model implements Contracts\Flow
             ->orderBy('order_number');
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(string $title): static
     {
-        $this->name = $title;
+        $this->title = $title;
+
+        return $this;
     }
 
     public function getTitle(): string
     {
-        return $this->name;
+        return $this->title ?: $this->name;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     public function getType(): Enums\ApprovalFlowType
