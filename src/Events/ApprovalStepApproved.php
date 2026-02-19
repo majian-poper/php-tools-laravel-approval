@@ -11,5 +11,5 @@ class ApprovalStepApproved
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public readonly ApprovalStep $approval) {}
+    public function __construct(public readonly ApprovalStep $approvalStep) {}
 }

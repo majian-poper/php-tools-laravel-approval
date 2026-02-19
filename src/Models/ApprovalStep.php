@@ -21,7 +21,7 @@ use PHPTools\Approval\Facades\ApprovalFacade;
  * @property string|null $comment
  * @property \Carbon\CarbonImmutable|null $approved_at
  *
- * @property-read Approval $approval
+ * @property-read ApprovalTask $task
  * @property-read Contracts\Approver & Model $approver
  * @property-read Authenticatable & Model $user
  */
@@ -55,7 +55,11 @@ class ApprovalStep extends Model implements Contracts\HasState
 
     public function task(): BelongsTo
     {
-        return $this->belongsTo(config('approval.implementations.approval_task', ApprovalTask::class));
+        return $this->belongsTo(
+            config('approval.implementations.approval_task', ApprovalTask::class),
+            'approval_task_id',
+            'id'
+        );
     }
 
     public function approver(): MorphTo
