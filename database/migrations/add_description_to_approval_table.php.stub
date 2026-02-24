@@ -10,7 +10,7 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('approval_tasks', 'description')) {
             Schema::table('approval_tasks', function (Blueprint $table) {
-                $table->text('description')->after('title');
+                $table->text('description')->nullable()->after('title');
             });
         }
     }
