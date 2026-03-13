@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use PHPTools\Approval\Enums\ApprovableEvent;
 use PHPTools\Approval\Events;
@@ -20,18 +19,22 @@ class RollBackTaskJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 600; // 10 minutes
-
-    public function __construct(public readonly ApprovalTask $approvalTask, public readonly int $chunkSize) {}
+    public function __construct(
+        public readonly ApprovalTask $approvalTask,
+        public readonly int $chunkSize,
+        public readonly int $page = 1,
+    ) {
+        $this->approvalTask->unsetRelations();
+    }
 
     public function displayName(): string
     {
-        return \get_class($this) . ' #' . $this->approvalTask->getKey();
-    }
-
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping($this->displayName()))->dontRelease()];
+        return \sprintf(
+            '%s #%d (%s)',
+            class_basename($this),
+            $this->approvalTask->getKey(),
+            $this->page,
+        );
     }
 
     public function handle(): void
@@ -42,13 +45,9 @@ class RollBackTaskJob implements ShouldQueue
 
         $query = $this->approvalTask->approvals()->whereEffected()->whereNotRolledBack()->reorder()->orderByDesc('order_number');
 
-        while (true) {
-            $approvals = (clone $query)->take($this->chunkSize)->get();
+        $approvals = (clone $query)->take($this->chunkSize)->get();
 
-            if ($approvals->isEmpty()) {
-                break;
-            }
-
+        if ($approvals->isNotEmpty()) {
             foreach ($approvals->groupBy('approvable_type') as $typeGroup) {
                 foreach ($typeGroup->groupBy('event') as $event => $eventGroup) {
                     $event = ApprovableEvent::from($event);
@@ -62,9 +61,13 @@ class RollBackTaskJob implements ShouldQueue
             }
         }
 
-        $this->approvalTask->markAsRolledBack()->save();
+        if ((clone $query)->exists()) {
+            static::dispatch($this->approvalTask, $this->chunkSize, $this->page + 1)->delay(3);
+        } else {
+            $this->approvalTask->markAsRolledBack()->save();
 
-        event(new Events\RollBackTaskJobCompleted($this->approvalTask));
+            event(new Events\RollBackTaskJobCompleted($this->approvalTask));
+        }
     }
 
     protected function rollBack(Collection $approvals, ApprovableEvent $event): void
