@@ -57,8 +57,7 @@ class ApprovalStep extends Model implements Contracts\HasState
     {
         return $this->belongsTo(
             config('approval.implementations.approval_task', ApprovalTask::class),
-            'approval_task_id',
-            'id'
+            'approval_task_id'
         );
     }
 
@@ -75,6 +74,11 @@ class ApprovalStep extends Model implements Contracts\HasState
     public function contains(Authenticatable $user): bool
     {
         return $this->approver->contains($user);
+    }
+
+    public function isReviewedBy(Authenticatable $user): bool
+    {
+        return $this->user?->is($user) ?? false;
     }
 
     public function approve(string $comment = ''): bool

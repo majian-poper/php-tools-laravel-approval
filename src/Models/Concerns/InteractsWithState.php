@@ -17,24 +17,24 @@ use PHPTools\Approval\Exceptions;
  */
 trait InteractsWithState
 {
-    public function scopeWhereStatus(Builder $query, Enums\ApprovalStatus ...$statuses): void
+    public function scopeWhereStatus(Builder $query, Enums\ApprovalStatus ...$statuses): Builder
     {
-        $query->whereIn('status', $statuses);
+        return $query->whereIn('status', $statuses);
     }
 
-    public function scopeWherePending(Builder $query): void
+    public function scopeWherePending(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::PENDING);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::PENDING);
     }
 
-    public function scopeWhereApproved(Builder $query): void
+    public function scopeWhereApproved(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::APPROVED);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::APPROVED);
     }
 
-    public function scopeWhereRejected(Builder $query): void
+    public function scopeWhereRejected(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::REJECTED);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::REJECTED);
     }
 
     public function getStatus(): Enums\ApprovalStatus

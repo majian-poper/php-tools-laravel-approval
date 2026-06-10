@@ -113,21 +113,23 @@ class ApprovalTask extends Model implements Contracts\HasState
             ->orderBy('order_number');
     }
 
-    public function scopeWhereApprover(Builder $query, Contracts\Approver $approver): void
+    public function scopeWhereApprover(Builder $query, Contracts\Approver $approver): Builder
     {
-        $query->whereRelation(
+        return $query->whereRelation(
             'steps',
             static fn(Builder $query): Builder => $query->whereMorphedTo('approver', $approver)
         );
     }
 
-    public function scopeWhereApprovers(Builder $query, Contracts\Approver ...$approvers): void
+    public function scopeWhereApprovers(Builder $query, Contracts\Approver ...$approvers): Builder
     {
-        $query->where(
-            static function (Builder $query) use ($approvers): void {
+        return $query->where(
+            function (Builder $query) use ($approvers): Builder {
                 foreach ($approvers as $approver) {
-                    $query->orWhere(static fn(Builder $query) => $query->whereApprover($approver));
+                    $query->orWhere(fn(Builder $query) => $this->scopeWhereApprover($query, $approver));
                 }
+
+                return $query;
             }
         );
     }
@@ -137,14 +139,14 @@ class ApprovalTask extends Model implements Contracts\HasState
         return $this->expires_at->isPast();
     }
 
-    public function canBeChangedStatus(): bool
+    public function canChangeStatus(): bool
     {
         return ! $this->isExpired() && $this->isPending();
     }
 
-    public function canBeChangedStatusBy(Authenticatable $user): bool
+    public function canStatusBeChangedBy(Authenticatable $user): bool
     {
-        return $this->canBeChangedStatus() && $this->affectableSteps($user)->isNotEmpty();
+        return $this->canChangeStatus() && $this->firstAffectableStepsFor($user)->isNotEmpty();
     }
 
     public function canBeRolledBack(): bool
@@ -157,17 +159,23 @@ class ApprovalTask extends Model implements Contracts\HasState
         return $this->canBeRolledBack() && $user instanceof Contracts\Approver && $user->canRollBack();
     }
 
-    public function approve(string $comment = ''): bool
+    public function approve(string $comment = '', ?Authenticatable $user = null): bool
     {
-        throw_if($this->isExpired(), Exceptions\ApprovalTaskExpiredException::class, $this);
+        $user = $user ?? ApprovalFacade::resolveUser();
 
-        $this->expectStatus(Enums\ApprovalStatus::PENDING);
+        throw_unless(
+            $this->canStatusBeChangedBy($user),
+            fn() => new Exceptions\ChangeStatusFailedException($this, Enums\ApprovalStatus::APPROVED, $user)
+        );
 
-        if (! $this->approveSteps($comment)) {
-            return false;
-        }
+        $this->firstAffectableStepsFor($user)->each->approveBy($user, $comment);
 
-        $saved = $this->markAsApproving()->save();
+        // 刷新 steps 关系以确保 isStepsApproved 获取到最新状态
+        $saved = $this->load('steps')->isStepsApproved()
+            ? $this->getConnection()->transaction(
+                fn(): bool => $this->newQuery()->lockForUpdate()->find($this->getKey())->markAsApproving()->save()
+            )
+            : false;
 
         if ($saved) {
             event(new Events\ApprovalTaskApproved($this));
@@ -178,17 +186,19 @@ class ApprovalTask extends Model implements Contracts\HasState
         return $saved;
     }
 
-    public function reject(string $comment = ''): bool
+    public function reject(string $comment = '', ?Authenticatable $user = null): bool
     {
-        throw_if($this->isExpired(), Exceptions\ApprovalTaskExpiredException::class, $this);
+        $user = $user ?? ApprovalFacade::resolveUser();
 
-        $this->expectStatus(Enums\ApprovalStatus::PENDING);
+        throw_unless(
+            $this->canStatusBeChangedBy($user),
+            fn() => new Exceptions\ChangeStatusFailedException($this, Enums\ApprovalStatus::REJECTED, $user)
+        );
 
-        if (! $this->rejectSteps($comment)) {
-            return false;
-        }
+        $this->firstAffectableStepsFor($user)->each->rejectBy($user, $comment);
 
-        $saved = $this->markAsRejected()->save();
+        // 刷新 steps 关系以确保 isStepsRejected 获取到最新状态
+        $saved = $this->load('steps')->isStepsRejected() ? $this->markAsRejected()->save() : false;
 
         if ($saved) {
             event(new Events\ApprovalTaskRejected($this));
@@ -197,11 +207,11 @@ class ApprovalTask extends Model implements Contracts\HasState
         return $saved;
     }
 
-    public function rollBack(): bool
+    public function rollBack(?Authenticatable $user = null): bool
     {
-        throw_if($this->isRolledBack(), Exceptions\RollBackFailedException::class, $this);
+        $user = $user ?? ApprovalFacade::resolveUser();
 
-        $this->expectStatus(Enums\ApprovalStatus::APPROVED);
+        throw_unless($this->canBeRolledBackBy($user), fn() => new Exceptions\RollBackFailedException($this, $user));
 
         $saved = $this->markAsRollingBack()->save();
 
@@ -214,66 +224,66 @@ class ApprovalTask extends Model implements Contracts\HasState
         return $saved;
     }
 
-    protected function affectableSteps(Authenticatable $user): Collection
+    /**
+     * 获取当前用户可处理的第一个审批步骤层级
+     *
+     * @param Authenticatable $user
+     *
+     * @return Collection<int, ApprovalStep>
+     */
+    protected function firstAffectableStepsFor(Authenticatable $user): Collection
     {
-        return $this->steps->filter(
-            static fn(ApprovalStep $step): bool => $step->isPending() && $step->contains($user)
-        );
-    }
-
-    protected function approveSteps(string $comment = ''): bool
-    {
-        $user = ApprovalFacade::resolveUser();
-
-        /** @var ApprovalStep $step */
-        foreach ($this->affectableSteps($user) as $step) {
-            try {
-                $step->approveBy($user, $comment);
-            } catch (\Exception $e) {
-                //
-            }
-        }
-
-        return $this->isStepsApproved();
-    }
-
-    protected function rejectSteps(string $comment = ''): bool
-    {
-        $user = ApprovalFacade::resolveUser();
-
-        /** @var ApprovalStep $step */
-        foreach ($this->affectableSteps($user) as $step) {
-            try {
-                $step->rejectBy($user, $comment);
-            } catch (\Exception $e) {
-                //
-            }
-        }
-
-        return $this->isStepsRejected();
+        return $this->steps
+            // 按照 order_number 分组, 同一 order_number 的 Step 是同层级的审批
+            ->groupBy('order_number')
+            // 该层级中每一个 Step 都是 Pending 状态, 表示该层级 Step 正在等待审批
+            ->filter->every(static fn(ApprovalStep $step): bool => $step->isPending())
+            // 每个层级只保留可被当前用户处理的 Step
+            ->map->filter(static fn(ApprovalStep $step): bool => $step->contains($user))
+            ->filter->isNotEmpty()
+            ->first() ?? collect();
     }
 
     protected function isStepsApproved(): bool
     {
+        // 极端兜底: 任务在没有任何审批步骤的情况下不应被视为通过.
+        // 正常流程下 createTask 时会强制至少存在一名审批人 (见 pushApprovers 中
+        // NoApproverForCreationException), 因此该分支仅用于防御数据异常 (例如步骤被外部清空).
+        // 此处必须返回 false, 否则上层 approve() 会跳过审批人校验直接将任务标记为已通过.
         if ($this->steps->isEmpty()) {
-            return true;
+            return false;
         }
 
-        return match ($this->flow_type) {
-            Enums\ApprovalFlowType::EVERY => $this->steps->every->isApproved(),
-            Enums\ApprovalFlowType::ANY => $this->steps->filter->isApproved()->isNotEmpty(),
+        $method = match ($this->flow_type) {
+            // EVERY 流程类型下, 只要有一个审批步骤未被批准, 就视为审批未被批准
+            Enums\ApprovalFlowType::EVERY => 'every',
+            // ANY 流程类型下, 只要有一个审批步骤被批准, 就视为审批被批准
+            Enums\ApprovalFlowType::ANY => 'some',
         };
+
+        return $this->steps->groupBy('order_number')->{$method}(
+            static fn(Collection $steps): bool => $steps->filter->isApproved()->isNotEmpty()
+        );
     }
 
     protected function isStepsRejected(): bool
     {
+        // 极端兜底: 与 isStepsApproved 对称, 无步骤时不应被视为已拒绝.
+        // 正常流程下不会出现 (createTask 强制至少存在一名审批人), 仅用于防御数据异常.
+        // 返回 false 可避免 reject() 在无审批人参与的情况下直接将任务标记为已拒绝.
         if ($this->steps->isEmpty()) {
-            return true;
+            return false;
         }
 
-        return match ($this->flow_type) {
-            Enums\ApprovalFlowType::EVERY => $this->steps->filter->isRejected()->isNotEmpty(),
-            Enums\ApprovalFlowType::ANY => $this->steps->every->isRejected(),
+        $method = match ($this->flow_type) {
+            // EVERY 流程类型下, 只要有一个审批步骤被拒绝, 就视为审批被拒绝
+            Enums\ApprovalFlowType::EVERY => 'some',
+            // ANY 流程类型下, 所有审批步骤都被拒绝, 才视为审批被拒绝
+            Enums\ApprovalFlowType::ANY => 'every',
         };
+
+        return $this->steps->groupBy('order_number')->{$method}(
+            static fn(Collection $steps): bool => $steps->filter->isRejected()->isNotEmpty()
+        );
     }
 }

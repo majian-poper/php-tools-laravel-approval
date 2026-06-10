@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use PHPTools\Approval\Facades\ApprovalFacade;
 
 /**
+ * @mixin \Illuminate\Database\Eloquent\Model
  * @see \Illuminate\Database\Eloquent\Model
  */
 trait ShouldBeApproved

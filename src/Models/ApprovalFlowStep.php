@@ -33,7 +33,10 @@ class ApprovalFlowStep extends Model
 
     public function flow(): BelongsTo
     {
-        return $this->belongsTo(config('approval.implementations.approval_flow', ApprovalFlow::class));
+        return $this->belongsTo(
+            config('approval.implementations.approval_flow', ApprovalFlow::class),
+            'approval_flow_id'
+        );
     }
 
     public function approver(): MorphTo

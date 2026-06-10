@@ -46,9 +46,6 @@ class SimpleFlow implements Contracts\Flow
         return $this->expiresAt;
     }
 
-    /**
-     * @return array<\PHPTools\Approval\Contracts\Approver>
-     */
     public function getApprovers(): iterable
     {
         return $this->approvers;

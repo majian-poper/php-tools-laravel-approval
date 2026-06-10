@@ -71,9 +71,11 @@ class ApprovalManager
             $this->enable(false);
         }
 
-        $result = $callback();
-
-        $this->enable($enabled);
+        try {
+            $result = $callback();
+        } finally {
+            $this->enable($enabled);
+        }
 
         return $result;
     }
@@ -111,8 +113,17 @@ class ApprovalManager
     {
         $taskModelClass = $this->config->get('approval.implementations.approval_task', Models\ApprovalTask::class);
 
-        $task = $taskModelClass::query()->getConnection()->transaction(
-            function () use ($taskModelClass, $user, $flow, $approvables): Models\ApprovalTask {
+        $modelQuery = $taskModelClass::query();
+        $connection = $modelQuery->getConnection();
+        $connectionName = $connection->getName();
+
+        static $tableSchemaCache = [];
+
+        $hasDescriptionColumn = $tableSchemaCache[$connectionName] ??= Schema::connection($connectionName)
+            ->hasColumn($modelQuery->getModel()->getTable(), 'description');
+
+        $task = $connection->transaction(
+            function () use ($taskModelClass, $user, $flow, $approvables, $hasDescriptionColumn): Models\ApprovalTask {
                 /** @var Models\ApprovalTask $task */
                 $task = new $taskModelClass(
                     [
@@ -124,7 +135,7 @@ class ApprovalManager
                     ]
                 );
 
-                if (Schema::connection($task->getConnectionName())->hasColumn($task->getTable(), 'description')) {
+                if ($hasDescriptionColumn) {
                     $task->setAttribute('description', $flow->getDescription());
                 }
 
@@ -152,7 +163,7 @@ class ApprovalManager
     {
         $customs = [];
 
-        foreach (config('approval.column_resolvers', []) as $resolver) {
+        foreach ($this->config->get('approval.column_resolvers', []) as $resolver) {
             if (\is_subclass_of($resolver, Contracts\ColumnResolver::class)) {
                 $column = \call_user_func([$resolver, 'name']);
                 $value = \call_user_func([$resolver, 'resolve']);
@@ -254,39 +265,45 @@ class ApprovalManager
             ->all();
     }
 
-    protected function pushApprovers(Models\ApprovalTask $task, iterable $approvers): Models\ApprovalTask
+    protected function pushApprovers(Models\ApprovalTask $task, iterable $approvers): void
     {
-        $builder = $task->steps()->getRelated()->newModelQuery();
-
+        $stepValues = [];
         $orderNumber = 0;
 
-        $stepValues = [];
-
         /** @var Contracts\Approver & Model $approver */
-        foreach ($approvers as $approver) {
-            if (! $approver instanceof Contracts\Approver) {
+        foreach ($approvers as $approverGroup) {
+            // 用于分组 approver, 相同的 order_number 的 approver 会被视为同一组 approver
+            // 同一组 approvers 中任一 approver 发生审批操作, 则该组内其他 approver 无需再次审批
+
+            $approverGroup = collect(Arr::wrap($approverGroup))
+                ->filter(static fn($approver): bool => $approver instanceof Contracts\Approver);
+
+            if ($approverGroup->isEmpty()) {
                 continue;
             }
 
-            $stepValues[] = [
-                'approval_task_id' => $task->id,
-                'order_number' => ++$orderNumber,
-                'approver_type' => $approver->getMorphClass(),
-                'approver_id' => $approver->getKey(),
-                'status' => Enums\ApprovalStatus::PENDING,
-            ];
+            $orderNumber++;
+
+            /** @var Contracts\Approver & Model $approver */
+            foreach ($approverGroup as $approver) {
+                $stepValues[] = [
+                    'approval_task_id' => $task->id,
+                    'order_number' => $orderNumber,
+                    'approver_type' => $approver->getMorphClass(),
+                    'approver_id' => $approver->getKey(),
+                    'status' => Enums\ApprovalStatus::PENDING,
+                ];
+            }
         }
 
         if ($orderNumber === 0) {
             throw new Exceptions\NoApproverForCreationException;
         }
 
-        $builder->fillAndInsert($stepValues);
-
-        return $task;
+        $task->steps()->getRelated()->newModelQuery()->fillAndInsert($stepValues);
     }
 
-    protected function pushApprovables(Models\ApprovalTask $task, iterable $approvables): Models\ApprovalTask
+    protected function pushApprovables(Models\ApprovalTask $task, iterable $approvables): void
     {
         $builder = $task->approvals()->getRelated()->newModelQuery();
 
@@ -326,8 +343,6 @@ class ApprovalManager
         if ($orderNumber === 0) {
             throw new Exceptions\NoApprovableForCreationException;
         }
-
-        return $task;
     }
 
     /**
