@@ -1,10 +1,10 @@
 <?php
 
-use PHPTools\Approval\Contracts;
-use PHPTools\Approval\Enums;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use PHPTools\Approval\Contracts;
+use PHPTools\Approval\Enums;
 
 return new class extends Migration
 {
@@ -40,7 +40,7 @@ return new class extends Migration
             function (Blueprint $table) {
                 $table->id();
                 $table->string('title')->default('');
-                $table->text('description');
+                $table->text('description')->nullable();
                 $table->morphs('user', 'approval_tasks_user_index');
                 $table->string('flow_type')->default(Enums\ApprovalFlowType::EVERY->value);
                 $table->string('status')->default(Enums\ApprovalStatus::PENDING->value);

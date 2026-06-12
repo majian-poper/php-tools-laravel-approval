@@ -20,19 +20,19 @@ trait InteractsWithTransitionalState
         markAsRejected as protected baseMarkAsRejected;
     }
 
-    public function scopeWhereApproving(Builder $query): void
+    public function scopeWhereApproving(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::APPROVING);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::APPROVING);
     }
 
-    public function scopeWhereRollingBack(Builder $query): void
+    public function scopeWhereRollingBack(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::ROLLING_BACK);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::ROLLING_BACK);
     }
 
-    public function scopeWhereRolledBack(Builder $query): void
+    public function scopeWhereRolledBack(Builder $query): Builder
     {
-        $query->scopeWhereStatus($query, Enums\ApprovalStatus::ROLLED_BACK);
+        return $this->scopeWhereStatus($query, Enums\ApprovalStatus::ROLLED_BACK);
     }
 
     public function getRolledBackAt(): ?\DateTimeInterface

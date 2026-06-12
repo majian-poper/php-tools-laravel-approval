@@ -19,7 +19,7 @@ interface Flow
     public function getExpiresAt(): \DateTimeInterface;
 
     /**
-     * @return array<Approver & \Illuminate\Database\Eloquent\Model>
+     * @return array<Approver | array<Approver>>
      */
     public function getApprovers(): iterable;
 }

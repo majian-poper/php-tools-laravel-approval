@@ -30,7 +30,7 @@ class RollBackTaskJob implements ShouldQueue
     public function displayName(): string
     {
         return \sprintf(
-            '%s #%d (%s)',
+            '%s #%d (%d)',
             class_basename($this),
             $this->approvalTask->getKey(),
             $this->page,
@@ -52,11 +52,11 @@ class RollBackTaskJob implements ShouldQueue
                 foreach ($typeGroup->groupBy('event') as $event => $eventGroup) {
                     $event = ApprovableEvent::from($event);
 
-                    event(new Events\ApprovalsRollingBack($approvals, $event));
+                    event(new Events\ApprovalsRollingBack($eventGroup, $event));
 
                     $this->rollBack($eventGroup, $event);
 
-                    event(new Events\ApprovalsRolledBack($approvals, $event));
+                    event(new Events\ApprovalsRolledBack($eventGroup, $event));
                 }
             }
         }

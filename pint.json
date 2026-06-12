@@ -8,6 +8,7 @@
         "function_declaration": {
             "closure_fn_spacing": "none"
         },
+        "fully_qualified_strict_types": false,
         "no_superfluous_phpdoc_tags": false,
         "no_multiline_whitespace_around_double_arrow": false,
         "phpdoc_separation": false,

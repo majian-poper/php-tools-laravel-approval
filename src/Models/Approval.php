@@ -13,7 +13,7 @@ use PHPTools\Approval\Enums;
  * @property int $approval_task_id
  * @property int $order_number
  * @property string $approvable_type
- * @property int $approvable_id
+ * @property string $approvable_id
  * @property string $approvable_unique_key
  * @property string $created_unique_key
  * @property Enums\ApprovableEvent $event
@@ -61,13 +61,15 @@ class Approval extends Model
         'rolled_back_at' => 'immutable_datetime',
     ];
 
+    protected static array $typeLabelCache = [];
+
     public function getApprovableTitleAttribute(): string
     {
-        return \sprintf(
-            '%s #%s',
-            (new (Model::getActualClassNameForMorph($this->approvable_type)))->getLabel(),
-            $this->approvable_id ?: 'new'
-        );
+        $type = $this->approvable_type;
+
+        $label = static::$typeLabelCache[$type] ??= app(Model::getActualClassNameForMorph($type))->getLabel();
+
+        return \sprintf('%s #%s', $label, $this->approvable_id ?: 'new');
     }
 
     public function task(): BelongsTo
@@ -90,14 +92,14 @@ class Approval extends Model
         return $query->whereNotNull('effected_at');
     }
 
-    public function scopeWhereNotRolledBack(Builder $query): void
+    public function scopeWhereNotRolledBack(Builder $query): Builder
     {
-        $query->whereNull('rolled_back_at');
+        return $query->whereNull('rolled_back_at');
     }
 
-    public function scopeWhereRolledBack(Builder $query): void
+    public function scopeWhereRolledBack(Builder $query): Builder
     {
-        $query->whereNotNull('rolled_back_at');
+        return $query->whereNotNull('rolled_back_at');
     }
 
     public function isEffected(): bool
@@ -107,7 +109,7 @@ class Approval extends Model
 
     public function isRolledBack(): bool
     {
-        return blank($this->rolled_back_at);
+        return filled($this->rolled_back_at);
     }
 
     public function markAsEffected(): self

@@ -13,8 +13,6 @@ class ApprovalServiceProvider extends PackageServiceProvider
             ->name('laravel-approval')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigration('create_laravel_approval_table')
-            ->hasMigration('add_description_to_approval_table');
-
+            ->discoversMigrations();
     }
 }

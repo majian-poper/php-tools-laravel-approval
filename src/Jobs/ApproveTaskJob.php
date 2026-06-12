@@ -33,7 +33,7 @@ class ApproveTaskJob implements ShouldQueue
     public function displayName(): string
     {
         return \sprintf(
-            '%s #%d (%s)',
+            '%s #%d (%d)',
             class_basename($this),
             $this->approvalTask->getKey(),
             $this->page,
@@ -55,11 +55,11 @@ class ApproveTaskJob implements ShouldQueue
                 foreach ($typeGroup->groupBy('event') as $event => $eventGroup) {
                     $event = ApprovableEvent::from($event);
 
-                    event(new Events\ApprovalsAffecting($approvals, $event));
+                    event(new Events\ApprovalsAffecting($eventGroup, $event));
 
                     $this->affect($eventGroup, $event);
 
-                    event(new Events\ApprovalsAffected($approvals, $event));
+                    event(new Events\ApprovalsAffected($eventGroup, $event));
                 }
             }
         }
@@ -111,25 +111,27 @@ class ApproveTaskJob implements ShouldQueue
 
         $approvableKeys = $this->getApprovableKeys($approvableBuilder, $approvals->pluck('created_unique_key')->all());
 
-        if ($approvableKeys->isNotEmpty()) {
-            $update = Collection::make();
-            $insert = Collection::make();
+        $update = Collection::make();
+        $insert = Collection::make();
 
-            foreach ($approvals as $approval) {
-                if ($approvableKeys->has($approval->created_unique_key)) {
-                    $approval->approvable_id = $approvableKeys->get($approval->created_unique_key);
-                    $approval->event = ApprovableEvent::UPDATING;
+        foreach ($approvals as $approval) {
+            if ($approvableKeys->has($approval->created_unique_key)) {
+                $approval->approvable_id = $approvableKeys->get($approval->created_unique_key);
+                $approval->event = ApprovableEvent::UPDATING;
 
-                    $update->push($approval);
-                } else {
-                    $insert->push($approval);
-                }
+                $update->push($approval);
+            } else {
+                $insert->push($approval);
             }
+        }
 
+        if ($update->isNotEmpty()) {
             $this->update($approvableBuilder, $update);
         }
 
-        $insert = $insert ?? $approvals;
+        if ($insert->isEmpty()) {
+            return;
+        }
 
         $approvableBuilder->fillAndInsert($insert->map->new_values->all());
 
@@ -147,7 +149,7 @@ class ApproveTaskJob implements ShouldQueue
         $foreignUniqueKeys = [];
 
         foreach ($approvals as $approval) {
-            /** @var Approvable $approvable */
+            /** @var \PHPTools\Approval\Contracts\Approvable | Model $approvable */
             $approvable = $approvableBuilder->make()->setRawAttributes($approval->new_values);
 
             foreach ($approvable->getForeignModelKeys() as $foreignModel => $foreignKeyName) {
@@ -172,7 +174,7 @@ class ApproveTaskJob implements ShouldQueue
         }
 
         foreach ($approvals as $approval) {
-            /** @var Approvable $approvable */
+            /** @var \PHPTools\Approval\Contracts\Approvable | Model $approvable */
             $approvable = $approval->getRelation('approvable');
 
             foreach ($approvable->getForeignModelKeys() as $foreignModel => $foreignKeyName) {
