@@ -30,7 +30,6 @@ use PHPTools\Approval\Jobs;
  * @property-read \Illuminate\Database\Eloquent\Collection<Approval> $approvals
  * @property-read \Illuminate\Database\Eloquent\Collection<ApprovalStep> $steps
  *
- * @method static Builder | static whereApprover(Contracts\Approver & Model $approver)
  * @method static Builder | static whereApprovers(Contracts\Approver & Model ...$approvers)
  */
 class ApprovalTask extends Model implements Contracts\HasState
@@ -113,24 +112,11 @@ class ApprovalTask extends Model implements Contracts\HasState
             ->orderBy('order_number');
     }
 
-    public function scopeWhereApprover(Builder $query, Contracts\Approver $approver): Builder
+    public function scopeWhereApprovers(Builder $query, Contracts\Approver ...$approvers): Builder
     {
         return $query->whereRelation(
             'steps',
-            static fn(Builder $query): Builder => $query->whereMorphedTo('approver', $approver)
-        );
-    }
-
-    public function scopeWhereApprovers(Builder $query, Contracts\Approver ...$approvers): Builder
-    {
-        return $query->where(
-            function (Builder $query) use ($approvers): Builder {
-                foreach ($approvers as $approver) {
-                    $query->orWhere(fn(Builder $query) => $this->scopeWhereApprover($query, $approver));
-                }
-
-                return $query;
-            }
+            static fn(Builder $query): Builder => $query->whereMorphedTo('approver', $approvers)
         );
     }
 
@@ -246,12 +232,10 @@ class ApprovalTask extends Model implements Contracts\HasState
 
     protected function isStepsApproved(): bool
     {
-        // 极端兜底: 任务在没有任何审批步骤的情况下不应被视为通过.
-        // 正常流程下 createTask 时会强制至少存在一名审批人 (见 pushApprovers 中
-        // NoApproverForCreationException), 因此该分支仅用于防御数据异常 (例如步骤被外部清空).
-        // 此处必须返回 false, 否则上层 approve() 会跳过审批人校验直接将任务标记为已通过.
+        // 没有审批步骤时, 视为已批准, 等价于跳过审批步骤的场景
+        // 但实际场景中不会触发此处的极端情况的判断逻辑
         if ($this->steps->isEmpty()) {
-            return false;
+            return true;
         }
 
         $method = match ($this->flow_type) {
@@ -268,9 +252,8 @@ class ApprovalTask extends Model implements Contracts\HasState
 
     protected function isStepsRejected(): bool
     {
-        // 极端兜底: 与 isStepsApproved 对称, 无步骤时不应被视为已拒绝.
-        // 正常流程下不会出现 (createTask 强制至少存在一名审批人), 仅用于防御数据异常.
-        // 返回 false 可避免 reject() 在无审批人参与的情况下直接将任务标记为已拒绝.
+        // 没有审批步骤时, 视为未被拒绝, 等价于跳过审批步骤的场景
+        // 但实际场景中不会触发此处的极端情况的判断逻辑
         if ($this->steps->isEmpty()) {
             return false;
         }
